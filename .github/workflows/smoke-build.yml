@@ -1,0 +1,45 @@
+name: CI Build and Smoke Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke check build output
+        run: |
+          if [ ! -d "./dist" ]; then
+            echo "ERROR: Build output directory 'dist' not found."
+            exit 1
+          fi
+          if [ ! -f "./dist/index.html" ]; then
+            echo "ERROR: dist/index.html not found."
+            exit 1
+          fi
+          echo "Smoke check passed: dist exists and contains index.html"
+
+      - name: Upload build artifact (optional)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verve-dist
+          path: dist

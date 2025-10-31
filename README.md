@@ -7,3 +7,8 @@ Single-file React demo app to rate actor performances. LocalStorage backed ratin
 1. Install
 ```bash
 npm install
+
+npm run dev
+
+npm run build
+npm run preview
